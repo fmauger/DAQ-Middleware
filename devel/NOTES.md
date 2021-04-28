@@ -1,7 +1,7 @@
 2021-04-28 :
 
 - Add a devel directory for utility scripts and notes for developpers
-
+- TODO: CMake-ize more subdirectories (utils, www)
 
 2021-04-28 : dc10724cf5bf92289b7590bd129c116fd3b6c59f
 
