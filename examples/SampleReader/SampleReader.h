@@ -69,6 +69,6 @@ private:
 extern "C"
 {
     void SampleReaderInit(RTC::Manager* manager);
-};
+}
 
 #endif // SAMPLEREADER_H

@@ -141,7 +141,7 @@ RTC::ReturnCode_t DaqOperator::onInitialize()
     return RTC::RTC_OK;
 }
 
-RTC::ReturnCode_t DaqOperator::onStartup(RTC::UniqueId ec_id)
+RTC::ReturnCode_t DaqOperator::onStartup(RTC::UniqueId /* ec_id */)
 {
     if (m_debug) {
         std::cerr << "\n**** DaqOperator::onStartup()\n";
@@ -151,7 +151,7 @@ RTC::ReturnCode_t DaqOperator::onStartup(RTC::UniqueId ec_id)
 }
 
 
-RTC::ReturnCode_t DaqOperator::onActivated(RTC::UniqueId ec_id)
+RTC::ReturnCode_t DaqOperator::onActivated(RTC::UniqueId /* ec_id */)
 {
     if(m_debug) {
         std::cerr << "\n**** DaqOperator::onActivated()\n";
@@ -161,7 +161,7 @@ RTC::ReturnCode_t DaqOperator::onActivated(RTC::UniqueId ec_id)
 }
 
 
-RTC::ReturnCode_t DaqOperator::onExecute(RTC::UniqueId ec_id)
+RTC::ReturnCode_t DaqOperator::onExecute(RTC::UniqueId /* ec_id */)
 {
     RTC::ReturnCode_t ret = RTC::RTC_OK;
 
@@ -525,7 +525,7 @@ int DaqOperator::set_command(RTC::CorbaConsumer<DAQService> daqservice,
         std::cerr << "### ERROR: set command: exception occured\n ";
     }
 
-    return 0;
+    return status;
 }
 
 int DaqOperator::check_done(RTC::CorbaConsumer<DAQService> daqservice)
@@ -543,7 +543,7 @@ int DaqOperator::check_done(RTC::CorbaConsumer<DAQService> daqservice)
     } catch(...) {
         std::cerr << "### checkDone: failed" << std::endl;
     }
-    return 0;
+    return status;
 }
 
 int DaqOperator::set_service_list()
@@ -1151,4 +1151,4 @@ extern "C"
                                  RTC::Create<DaqOperator>,
                                  RTC::Delete<DaqOperator>);
     }
-};
+}

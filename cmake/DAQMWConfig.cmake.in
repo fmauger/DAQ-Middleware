@@ -1,0 +1,139 @@
+# - Config file for the DAQMW package
+# It defines the following variables
+#
+#  DAQMW_VERSION          - DAQMW version string
+#  DAQMW_CMAKE_CONFIG_DIR - DAQMW CMake config directory
+#  DAQMW_ROOT_FOUND       - DAQMW ROOT usage flag
+#  DAQMW_ROOT_DIR         - DAQMW ROOT DIR
+#  DAQMW_DOXYGEN_HTML_DIR - path to directory holding Doxygen docs
+#                            for DAQMW. Empty if docs were not built
+#  DAQMW_DOXYGEN_TAGFILE  - path to Doxygen tagfile for DAQMW's docs
+#                            Empty if docs were not built
+#  DAQMW_INCLUDE_DIRS     - DAQMW include dirs
+
+#----------------------------------------------------------------------
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#----------------------------------------------------------------------
+
+# - Core API version
+set(DAQMW_VERSION "@DAQMW_VERSION@")
+message(STATUS "=== CONFIG === DAQMW_VERSION=${DAQMW_VERSION}")
+# - DAQMW cmake-config path is stored to help explicit path resolution in client packages:
+set(DAQMW_CMAKE_CONFIG_DIR "${CMAKE_CURRENT_LIST_DIR}")
+message(STATUS "=== CONFIG === DAQMW_CMAKE_CONFIG_DIR=${DAQMW_CMAKE_CONFIG_DIR}")
+
+# - Load Custom Modules
+# message(STATUS "=== CONFIG === PROJECT_CMAKEDIR_TO_CMAKEMODULEDIR=@PROJECT_CMAKEDIR_TO_CMAKEMODULEDIR@")
+# list(INSERT CMAKE_MODULE_PATH 0 "${CMAKE_CURRENT_LIST_DIR}/@PROJECT_CMAKEDIR_TO_CMAKEMODULEDIR@")
+
+# Component Availability
+
+#-----------------------------------------------------------------------
+# Start of CMake Generated
+@PACKAGE_INIT@
+# End of Cmake Generated
+
+#-----------------------------------------------------------------------
+# Though usage requirements help clients link, variables for the
+# header path(s) may still be needed by tools needed downstream, such
+# as ROOT dictionary generation
+set_and_check(DAQMW_INCLUDE_DIR "${CMAKE_CURRENT_LIST_DIR}/@PROJECT_CMAKEDIR_TO_INCLUDEDIR@")
+set_and_check(DAQMW_LIBRARY_DIR "${CMAKE_CURRENT_LIST_DIR}/@PROJECT_CMAKEDIR_TO_LIBDIR@")
+set(DAQMW_IDL_INCLUDE_DIR "${DAQMW_INCLUDE_DIR}/daqmw/idl")
+set(DAQMW_INCLUDE_DIRS "${DAQMW_INCLUDE_DIR}"
+  "${DAQMW_INCLUDE_DIR}/daqmw"
+  "${DAQMW_IDL_INCLUDE_DIR}"
+  "${DAQMW_INCLUDE_DIR}/daqmw/sock"
+  "${DAQMW_INCLUDE_DIR}/daqmw/sitcpbcp"
+  "${DAQMW_INCLUDE_DIR}/daqmw/sock"
+  "${DAQMW_INCLUDE_DIR}/daqmw/SitcpRbcp"
+  "${DAQMW_INCLUDE_DIR}/daqmw/json_spirit"
+  )
+
+#-----------------------------------------------------------------------
+# - Refind third party deps here to regenerate imported targets
+#   Use exact versions to guarantee(*) binary compatibilty
+#   (*) at least at the API versioning level...
+# - Boost
+# - Force explicit Boost path in order to find the Boost used at build time
+#   (to avoid spurious collision with system Boost in client packages)
+set(BOOST_ROOT @DAQMW_BOOST_ROOT@)
+set(DAQMW_BOOST_VERSION @Boost_MAJOR_VERSION@.@Boost_MINOR_VERSION@)
+set(DAQMW_BOOST_COMPONENTS @DAQMW_BOOST_COMPONENTS@)
+set(Boost_ADDITIONAL_VERSIONS ${DAQMW_BOOST_VERSION})
+set(Boost_NO_BOOST_CMAKE ON)
+message( STATUS "Searching Boost ${DAQMW_BOOST_VERSION} from ${BOOST_ROOT} ...")
+message(STATUS "Finding Boost ${DAQMW_BOOST_VERSION}...")
+find_package(Boost ${DAQMW_BOOST_VERSION} EXACT REQUIRED
+  COMPONENTS ${DAQMW_BOOST_COMPONENTS}
+  )
+if (Boost_VERSION VERSION_GREATER 106800)
+  # - Use explicitely the Boost/Math fp utilities for 
+  add_definitions("-DBOOST_MATH_DISABLE_STD_FPCLASSIFY")
+endif()
+#include_directories(${Boost_INCLUDE_DIR})
+
+set(OpenRTM_DIR @OPENRTM_DIR@)
+set(DAQMW_OPENRTM_VERSION @DAQMW_OPENRTM_VERSION@)
+message(STATUS "Finding OpenRTM ${DAQMW_OPENRTM_VERSION}...")
+#find_package(OpenRTM ${DAQMW_OPENRTM_VERSION} CONFIG)
+find_package(OpenRTM)
+#include_directories(${OPENRTM_INCLUDE_DIR})
+
+set(DAQMW_XERCESC_VERSION @DAQMW_XERCESC_VERSION@)
+message(STATUS "Finding XercesC ${DAQMW_XERCESC_VERSION}...")
+find_package(XercesC ${DAQMW_XERCESC_VERSION})
+
+set(DAQMW_XALANC_VERSION @DAQMW_XALANC_VERSION@)
+message(STATUS "Finding XalanC ${DAQMW_XALANC_VERSION}...")
+find_package(XalanC ${DAQMW_XALANC_VERSION})
+
+# - various executable programs:
+set(XALAN_EXECUTABLE @XALAN_EXECUTABLE@)
+set(XMLLINT_EXECUTABLE @XMLLINT_EXECUTABLE@)
+set(LDD_EXECUTABLE @LDD_EXECUTABLE@)
+set(OMNINAMES_EXECUTABLE @OMNINAMES_EXECUTABLE@)
+
+# - ROOT
+if(DAQMW_ROOT)
+  set(DAQMW_ROOT_VERSION @ROOT_VERSION@)
+  message(STATUS "Finding DAQMW_ROOT ${DAQMW_ROOT_VERSION}...")
+  # ROOT can F-up the module path and insert it's own
+  # modules. Prevent it doing this.
+  set(ROOT_DIR @ROOT_DIR@)
+  set(CMAKE_MODULE_PATH_PREROOT ${CMAKE_MODULE_PATH})
+  set(DAQMW_ROOT_COMPONENTS @DAQMW_ROOT_COMPONENTS@)
+  find_package(ROOT ${DAQMW_ROOT_VERSION} EXACT REQUIRED
+    COMPONENTS ${DAQMW_ROOT_COMPONENTS} CONFIG
+    )
+  set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH_PREROOT})
+endif()
+
+# This is installed in the same location as us...
+#
+if(NOT DAQMW_TARGETS_LOADED)
+  include("${CMAKE_CURRENT_LIST_DIR}/DAQMWTargets.cmake")
+  set(DAQMW_TARGETS_LOADED 1)
+endif()
+
+#-----------------------------------------------------------------------
+# - Special function(s)
+include("${CMAKE_CURRENT_LIST_DIR}/DAQMWBuildComponent.cmake")
+
+#-----------------------------------------------------------------------
+# Component validation
+#
+check_required_components(DAQMW)
+
+#-----------------------------------------------------------------------

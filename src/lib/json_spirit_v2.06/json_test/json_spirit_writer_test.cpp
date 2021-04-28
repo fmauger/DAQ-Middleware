@@ -11,6 +11,7 @@
 #include "utils_test.h"
 
 #include <sstream>
+#include <climits>
 
 using namespace json_spirit;
 using namespace std;
@@ -193,7 +194,8 @@ namespace
 
             add_value( obj, "name_1", 11 );
             add_value( obj, "name_2", INT_MAX );
-            add_value( obj, "name_3", LLONG_MAX );
+            static const boost::int64_t llong_max(LLONG_MAX);
+            add_value( obj, "name_3", llong_max);
 
             ostringstream os;
 

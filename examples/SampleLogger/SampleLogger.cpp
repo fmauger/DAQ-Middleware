@@ -65,7 +65,7 @@ RTC::ReturnCode_t SampleLogger::onInitialize()
     return RTC::RTC_OK;
 }
 
-RTC::ReturnCode_t SampleLogger::onExecute(RTC::UniqueId ec_id)
+RTC::ReturnCode_t SampleLogger::onExecute(RTC::UniqueId /* ec_id */)
 {
     daq_do();
 
@@ -93,8 +93,8 @@ int SampleLogger::parse_params(::NVList* list)
 {
     int ret = 0;
 
-    bool isExistParamLogging = false;
-    bool isExistParamDirName = false;
+    // bool isExistParamLogging = false;
+    // bool isExistParamDirName = false;
 
     int length = (*list).length();
     for (int i = 0; i < length; i += 2) {
@@ -112,16 +112,16 @@ int SampleLogger::parse_params(::NVList* list)
         }
         if (sname == "isLogging") {
             toLower(svalue); // all characters of cvale are converted to lower.
-            isExistParamLogging = true;
+            // isExistParamLogging = true;
             if (svalue == "yes") {
                 m_isDataLogging = true;
                 fileUtils = new FileUtils();
-                isExistParamLogging = true;
+                // isExistParamLogging = true;
                 std::cerr << "SampleLogger: Save to file: true\n";
             }
             else if (svalue == "no") {
                 m_isDataLogging = false;
-                isExistParamLogging = true;
+                // isExistParamLogging = true;
                 std::cerr << "SampleLogger: Save to file: false\n";
             }
         }
@@ -144,7 +144,7 @@ int SampleLogger::parse_params(::NVList* list)
             std::string svalue = (std::string)(*list)[i + 1].value;
 
             if (sname == "dirName") {
-                isExistParamDirName = true;
+                // isExistParamDirName = true;
                 m_dirName = svalue;
                 if (m_isDataLogging) {
                     std::cerr << "Dir name for data saving:"
@@ -308,10 +308,10 @@ int SampleLogger::daq_run()
     }
 
     if (m_isDataLogging) {
-        int ret = fileUtils->write_data((char *)&m_in_data.data[HEADER_BYTE_SIZE],
+        int ret2 = fileUtils->write_data((char *)&m_in_data.data[HEADER_BYTE_SIZE],
                                         event_byte_size);
 
-        if (ret < 0) {
+        if (ret2 < 0) {
             std::cerr << "### SampleLogger: ERROR occured at data saving\n";
             fatal_error_report(CANNOT_WRITE_DATA);
         }
@@ -340,4 +340,4 @@ extern "C"
                                  RTC::Create<SampleLogger>,
                                  RTC::Delete<SampleLogger>);
     }
-};
+}

@@ -1,0 +1,57 @@
+//! \file    daqmw/daqmw_version.h
+//! \brief   Describe the DAQ-Middleware API version
+//! \details Querying the version of DAQ-Middleware is needed at both
+//!          compile and runtime by clients so that they may adjust
+//!          their usage.
+//
+// Copyright (c) 2013 by Ben Morgan <bmorgan.warwick@gmail.com>
+// Copyright (c) 2013 by The University of Warwick
+// Copyright (c) 2021 by Francois Mauger <mauger@lpccaen.in2p3.fr>
+// Copyright (c) 2021 by Université de Caen Normandie
+
+#ifndef DAQMW_DAQMW_VERSION_H
+#define DAQMW_DAQMW_VERSION_H
+
+// Standard library
+#include <string>
+
+#cmakedefine DAQMW_LIB_VERSION "@DAQMW_VERSION@"
+#cmakedefine DAQMW_VERSION_MAJOR @DAQMW_VERSION_MAJOR@
+#cmakedefine DAQMW_VERSION_MINOR @DAQMW_VERSION_MINOR@
+#cmakedefine DAQMW_VERSION_PATCH @DAQMW_VERSION_PATCH@
+
+#cmakedefine DAQMW_OPENRTM_LIB_VERSION "@DAQMW_OPENRTM_VERSION@"
+#cmakedefine DAQMW_OPENRTM_VERSION_MAJOR @DAQMW_OPENRTM_VERSION_MAJOR@
+#cmakedefine DAQMW_OPENRTM_VERSION_MINOR @DAQMW_OPENRTM_VERSION_MINOR@
+#cmakedefine DAQMW_OPENRTM_VERSION_PATCH @DAQMW_OPENRTM_VERSION_PATCH@
+
+namespace DAQMW {
+
+  //! \brief Describe the DAQ-Middleware API version and features
+  struct version {
+
+    //! Return the major version number of DAQ-Middleware, e.g., 1 for '1.2.3'
+    static int get_major();
+
+    //! Return the minor version number of DAQ-Middleware, e.g., 2 for '1.2.3'
+    static int get_minor();
+
+    //! Return the patch version number of DAQ-Middleware, e.g., 3 for '1.2.3'
+    static int get_patch();
+
+    //! Return the full version number of DAQ-Middleware as a string, e.g., '1.2.3'
+    static std::string get_version();
+
+    //! Return true if the current DAQ-Middleware version >= (major, minor, patch)
+    static bool is_at_least(int major_, int minor_, int patch_);
+
+    //! Return true if the named feature is available in DAQ-Middleware
+    static bool has_feature(const std::string & feature_);
+
+    static std::string get_rtm_version();
+
+  };
+  
+} // namespace DAQMW
+
+#endif // DAQMW_DAQMW_VERSION_H

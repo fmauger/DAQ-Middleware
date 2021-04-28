@@ -125,7 +125,7 @@ namespace DAQMW {
   }
 
   inline int ParameterServer::extCmdVal(std::string command, std::string* com, 
-					std::string* value) {
+                                        std::string* value) {
     int status;
     std::string tag;
 
@@ -157,7 +157,7 @@ namespace DAQMW {
     int st;
     try {
       if (m_debug)
-	std::cerr << "ParameterServer::Run() enter and then wait for new connection...\n";
+        std::cerr << "ParameterServer::Run() enter and then wait for new connection...\n";
       m_server.accept ( m_newSock );
       
       int status;
@@ -167,91 +167,91 @@ namespace DAQMW {
       int msgSiz=0;
       st = m_newSock.recvAll((unsigned int*)&msgSiz, 4);
       if (st == Sock::ERROR_TIMEOUT) {
-	std::cerr << "ParameterServer::Run() Receive Timeout for length..." << std::endl;
-	m_newSock.disconnect();
-	return 0;
+        std::cerr << "ParameterServer::Run() Receive Timeout for length..." << std::endl;
+        m_newSock.disconnect();
+        return 0;
       }
       st = m_newSock.recvAll(command, msgSiz);
       if (st == Sock::ERROR_TIMEOUT) {
-	std::cerr << "ParameterServer::Run() Receive Timeout for message..." << std::endl;
-	m_newSock.disconnect();
-	return 0;
+        std::cerr << "ParameterServer::Run() Receive Timeout for message..." << std::endl;
+        m_newSock.disconnect();
+        return 0;
       }
       
       if (m_debug)
-	std::cerr << "ParameterServer::Run() command = " << command << std::endl;
+        std::cerr << "ParameterServer::Run() command = " << command << std::endl;
       // for "put", com="put" and value = string followed.
       // for "get", com="get" and value is no meaning
       // status = 1 for "get" and "put". Otherwise 0.
       status = extCmdVal(command, &com, &value);
       if (!status) {
-	std::cerr << "ParameterServer::Run() Invalid command" << std::endl;
-	std::string ng = "NG";
-	unsigned int buf[2];
-	buf[0] = ng.size();
-	buf[1] = 0;
-	int length = sizeof(int)+ng.size();
-	memcpy(&buf[1], ng.c_str(), ng.size());
-	m_newSock.sendAll(buf, length);
-	if (m_debug)
-	  std::cerr << "ParameterServer::Run() Sock disconnection now...\n"; 
-	m_newSock.disconnect();
+        std::cerr << "ParameterServer::Run() Invalid command" << std::endl;
+        std::string ng = "NG";
+        unsigned int buf[2];
+        buf[0] = ng.size();
+        buf[1] = 0;
+        int length = sizeof(int)+ng.size();
+        memcpy(&buf[1], ng.c_str(), ng.size());
+        m_newSock.sendAll(buf, length);
+        if (m_debug)
+          std::cerr << "ParameterServer::Run() Sock disconnection now...\n"; 
+        m_newSock.disconnect();
       } else { // success
-	if(com == "put") {
-	  if (m_debug)
-	    std::cerr << "ParameterServer::Run() comand is put" << std::endl;
-	  m_msg = value;
-	  *(m_param.getValueP()) = value;
-	}
-	if(com == "get") {
-	  if (m_debug)
-	    std::cerr << "ParameterServer::Run() comand is get" << std::endl;
-	  m_msg =  *(m_param.getValueP());
-	}
-	if (m_debug)
-	  std::cout << "ParameterServer::Run() status = " << status 
-		    << " com = " << com << " value = " << m_msg << std::endl;
-	// call callback function if it exists
-	if ((callback = m_param.getCallBackFunc()) != (CallBackFunction)0) {
-	  (*(m_param.getCallBackFunc()))();
-	}
-	
-	int size = m_msg.length();
-	if (m_debug) {
-	  std::cout << "ParameterServer::Run() message to be sent : length = ";
-	  std::cout << size << " message = " << m_msg << std::endl; 
-	}
-	int length = sizeof(int)+size;
-	int storeLength = length%sizeof(int);
-	if(storeLength)
-	  storeLength = length/sizeof(int) + 1;
-	else
-	  storeLength = length/sizeof(int);
-	storeLength++; // for terminator
-	unsigned int* buff = new unsigned int[storeLength];
-	buff[0] = size;
-	memcpy(&buff[1], m_msg.c_str(), size);
-	m_newSock.sendAll(buff, length);
-	delete [] buff;
-	if (m_debug)
-	  std::cerr << "ParameterServer::Run() Sock disconnection now...:"; 
-	m_newSock.disconnect();
+        if(com == "put") {
+          if (m_debug)
+            std::cerr << "ParameterServer::Run() comand is put" << std::endl;
+          m_msg = value;
+          *(m_param.getValueP()) = value;
+        }
+        if(com == "get") {
+          if (m_debug)
+            std::cerr << "ParameterServer::Run() comand is get" << std::endl;
+          m_msg =  *(m_param.getValueP());
+        }
+        if (m_debug)
+          std::cout << "ParameterServer::Run() status = " << status 
+                    << " com = " << com << " value = " << m_msg << std::endl;
+        // call callback function if it exists
+        if ((callback = m_param.getCallBackFunc()) != (CallBackFunction)0) {
+          (*(m_param.getCallBackFunc()))();
+        }
+        
+        int size = m_msg.length();
+        if (m_debug) {
+          std::cout << "ParameterServer::Run() message to be sent : length = ";
+          std::cout << size << " message = " << m_msg << std::endl; 
+        }
+        int length = sizeof(int)+size;
+        int storeLength = length%sizeof(int);
+        if(storeLength)
+          storeLength = length/sizeof(int) + 1;
+        else
+          storeLength = length/sizeof(int);
+        storeLength++; // for terminator
+        unsigned int* buff = new unsigned int[storeLength];
+        buff[0] = size;
+        memcpy(&buff[1], m_msg.c_str(), size);
+        m_newSock.sendAll(buff, length);
+        delete [] buff;
+        if (m_debug)
+          std::cerr << "ParameterServer::Run() Sock disconnection now...:"; 
+        m_newSock.disconnect();
       }
     } catch ( SockException& e ) {
       std::cerr << "ParameterServer::Run() Sock Exception was caught:" 
-		<< e.what();
+                << e.what();
       if (m_debug)
-	std::cerr << "ParameterServer::Run() Sock disconnection now...:"; 
+        std::cerr << "ParameterServer::Run() Sock disconnection now...:"; 
       m_newSock.disconnect();
     } catch (...) {
       std::cerr << "ParameterServer::Run() Exception was caught"  << std::endl;
       if (m_debug)
-	std::cerr << "ParameterServer::Run() Sock disconnection now...:"; 
+        std::cerr << "ParameterServer::Run() Sock disconnection now...:"; 
       m_newSock.disconnect();
     }
     return 0;
   }
   
-};//namespace
+} //namespace
 
 #endif // PARAMETERSERVER_H

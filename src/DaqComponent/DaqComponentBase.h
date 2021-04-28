@@ -18,6 +18,7 @@
 
 #include <iostream>
 
+#include <rtm/version.h>
 #include <rtm/Manager.h>
 #include <rtm/DataFlowComponentBase.h>
 #include <rtm/idl/BasicDataTypeSkel.h>
@@ -26,10 +27,19 @@
 #include <rtm/DataOutPort.h>
 #include <rtm/DataPortStatus.h>
 
+#include "version.h"
 #include "DAQServiceSVC_impl.h"
 #include "DAQService.hh"
 #include "DaqComponentException.h"
 #include "Timer.h"
+
+#if DAQMW_OPENRTM_VERSION_MAJOR >= 2
+#define OPENRTM_RTC_PORT_STATUS_TYPE RTC::DataPortStatus
+#define OPENRTM_RTC_PORT_STATUS_TO_STRING RTC::toString
+#else
+#define OPENRTM_RTC_PORT_STATUS_TYPE RTC::DataPortStatus::Enum
+#define OPENRTM_RTC_PORT_STATUS_TO_STRING RTC::DataPortStatus::toString
+#endif //DAQMW_OPENRTM_VERSION_MAJOR >= 2
 
 /*!
  * @namespace DAQMW
@@ -383,10 +393,15 @@ namespace DAQMW
         {
             BufferStatus ret = BUF_SUCCESS;
             int index = 0;
-            RTC::DataPortStatus::Enum out_status = myOutPort.getStatus(index);
+// #if DAQMW_OPENRTM_VERSION_MAJOR >= 2
+//             RTC::DataPortStatus out_status = myOutPort.getStatus(index);
+// #else
+//             RTC::DataPortStatus::Enum out_status = myOutPort.getStatus(index);
+// #endif // DAQMW_OPENRTM_VERSION_MAJOR >= 2 
+            OPENRTM_RTC_PORT_STATUS_TYPE out_status = myOutPort.getStatus(index);
             if(m_debug) {
                 std::cerr << "OutPort status: "
-                          << RTC::DataPortStatus::toString(out_status) 
+                          << OPENRTM_RTC_PORT_STATUS_TO_STRING(out_status) 
                           << std::endl;
             }
             switch(out_status) {
@@ -404,7 +419,7 @@ namespace DAQMW
             case RTC::DataPortStatus::PRECONDITION_NOT_MET:
             case RTC::DataPortStatus::CONNECTION_LOST:
                 std::cerr << "OutPort status: "
-                          << RTC::DataPortStatus::toString(out_status) 
+                          << OPENRTM_RTC_PORT_STATUS_TO_STRING(out_status) 
                           << std::endl;
                 ret = BUF_FATAL;
                 break;
@@ -417,7 +432,7 @@ namespace DAQMW
             case RTC::DataPortStatus::BUFFER_ERROR:
             case RTC::DataPortStatus::INVALID_ARGS:
                 std::cerr << "Impossible OutPort status: "
-                          << RTC::DataPortStatus::toString(out_status) 
+                          << OPENRTM_RTC_PORT_STATUS_TO_STRING(out_status) 
                           << std::endl;
                 ret = BUF_FATAL;
                 break;
@@ -438,10 +453,15 @@ namespace DAQMW
         {
             BufferStatus ret = BUF_SUCCESS;
             int index = 0;
-            RTC::DataPortStatus::Enum in_status = myInPort.getStatus(index);
+// #if DAQMW_OPENRTM_VERSION_MAJOR >= 2 
+//             RTC::DataPortStatus in_status = myInPort.getStatus(index);
+// #else
+//             RTC::DataPortStatus::Enum in_status = myInPort.getStatus(index);
+// #endif // DAQMW_OPENRTM_VERSION_MAJOR >= 2 
+            OPENRTM_RTC_PORT_STATUS_TYPE in_status = myInPort.getStatus(index);
             if(m_debug) {
                 std::cerr << "InPort status: "
-                          << RTC::DataPortStatus::toString(in_status)
+                          << OPENRTM_RTC_PORT_STATUS_TO_STRING(in_status)
                           << std::endl;
             }
             switch(in_status) {
@@ -457,7 +477,7 @@ namespace DAQMW
             case RTC::DataPortStatus::PORT_ERROR:
             case RTC::DataPortStatus::PRECONDITION_NOT_MET:
                 std::cerr << "InPort status: "
-                          << RTC::DataPortStatus::toString(in_status)
+                          << OPENRTM_RTC_PORT_STATUS_TO_STRING(in_status)
                           << std::endl;
                 ret = BUF_FATAL;
                 break;
@@ -472,7 +492,7 @@ namespace DAQMW
             case RTC::DataPortStatus::CONNECTION_LOST:
             case RTC::DataPortStatus::UNKNOWN_ERROR:
                 std::cerr << "Impossible InPort status: " 
-                          << RTC::DataPortStatus::toString(in_status) 
+                          << OPENRTM_RTC_PORT_STATUS_TO_STRING(in_status) 
                           << std::endl;
                 ret = BUF_FATAL;
                 break;

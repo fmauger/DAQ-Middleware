@@ -22,12 +22,12 @@ int main()
     test_writer();
     test_reader();
 
-    cout << "all tests passed" << endl << endl;
-    cout << "press any key to continue";
+    // clog << "all tests passed" << endl << endl;
+    // clog << "press any key to continue";
 
-    string s;
-    cin >> s;
+    // string s;
+    // cin >> s;
 
-	return 0;
+    return 0;
 }
 

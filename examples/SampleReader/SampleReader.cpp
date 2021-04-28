@@ -63,7 +63,7 @@ RTC::ReturnCode_t SampleReader::onInitialize()
     return RTC::RTC_OK;
 }
 
-RTC::ReturnCode_t SampleReader::onExecute(RTC::UniqueId ec_id)
+RTC::ReturnCode_t SampleReader::onExecute(RTC::UniqueId /* ec_id */)
 {
     daq_do();
 
@@ -293,4 +293,4 @@ extern "C"
                     RTC::Create<SampleReader>,
                     RTC::Delete<SampleReader>);
     }
-};
+}

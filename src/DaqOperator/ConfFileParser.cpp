@@ -186,7 +186,7 @@ int ConfFileParser::readConfFile(const char* xmlFile, bool isConfigure)
             /// loop for Component nodes
             for(int m = 0; m < compNum; m++){
                 ComponentInfoContainer compCont;
-                DOMElement* ele = (DOMElement*)comp->item(m);
+                DOMElement* ele2 = (DOMElement*)comp->item(m);
                 // comp id
                 std::string key1;
                 if (isConfigure) {
@@ -196,7 +196,7 @@ int ConfFileParser::readConfFile(const char* xmlFile, bool isConfigure)
                     //std::cerr << "name: " << key2;
                 }
 
-                DOMAttr* cattr = ele->getAttributeNode(TAG_compId);
+                DOMAttr* cattr = ele2->getAttributeNode(TAG_compId);
                 char* compId = XMLString::transcode(cattr->getValue());
                 if (m_debug) {
                     std::cerr << "compId:" << compId << std::endl;
@@ -216,13 +216,13 @@ int ConfFileParser::readConfFile(const char* xmlFile, bool isConfigure)
                 compCont.setConf(conf);
                 compCont.setStartupOrder(orde);
 
-                getElementsFromParent(ele, TAG_compInPort,  key1, groupId, &compCont); ///get inPorts
-                getElementsFromParent(ele, TAG_compOutPort, key1, groupId, &compCont); ///get outPorts
+                getElementsFromParent(ele2, TAG_compInPort,  key1, groupId, &compCont); ///get inPorts
+                getElementsFromParent(ele2, TAG_compOutPort, key1, groupId, &compCont); ///get outPorts
 
                 if (isConfigure) {
                     std::string key3 = makeXPath(key1, TAG_params, 0);
                     std::string mycompId = groupId + ":" + compId;
-                    getParams(ele, TAG_param, key3, mycompId, &compCont); ///get param
+                    getParams(ele2, TAG_param, key3, mycompId, &compCont); ///get param
                 }
 
                 XMLString::release(&compId);
@@ -290,8 +290,11 @@ int ConfFileParser::getElementsFromParent(
 }
 
 
-int ConfFileParser::getElementsFromParent(
-    xercesc::DOMElement* myEle, XMLCh* chName, std::string xpath, std::string gid, ComponentInfoContainer* compCont)
+int ConfFileParser::getElementsFromParent(xercesc::DOMElement* myEle,
+                                          XMLCh* chName,
+                                          std::string xpath,
+                                          std::string /*gid*/,
+                                          ComponentInfoContainer* compCont)
 {
     DOMNodeList* nodeList = myEle->getElementsByTagName(chName);
     char* tagName = XMLString::transcode(chName);
@@ -407,7 +410,11 @@ int ConfFileParser::getElementsFromParent(
     return 0;
 }
 
-int ConfFileParser::getParams(xercesc::DOMElement* myEle, XMLCh* chName, std::string xpath, std::string compId, ComponentInfoContainer* compCont)
+int ConfFileParser::getParams(xercesc::DOMElement* myEle,
+                              XMLCh* chName,
+                              std::string xpath,
+                              std::string compId,
+                              ComponentInfoContainer* /*compCont*/)
 {
     DOMNodeList* nodeList = myEle->getElementsByTagName(chName);
     char* tagName = XMLString::transcode(chName);

@@ -1,10 +1,13 @@
 #include "SitcpRbcp.h"
 
-#include <string>
 #include <iostream>
+#include <string.h>
+
+#include <arpa/inet.h>
 
 #include <err.h>
 #include "SitcpRbcp.h"
+#include "Sock.h"
 
 int SitcpRbcp::set_verify_mode()
 {
@@ -80,28 +83,32 @@ int SitcpRbcp::send_recv_command_packet(int command, std::string ip_address, int
     send_header.length   = (char) length;
     send_header.address  = htonl(address);
 
-    DAQMW::Sock m_sock(ip_address, SITCP_RBCP_PORT);
-    m_sock.connectUDP();
+    DAQMW::Sock my_sock(ip_address, SITCP_RBCP_PORT);
+    my_sock.connectUDP();
     
     int send_buf_len = SITCP_RBCP_HEADER_LEN;
     if (command == WRITE) {
         send_buf_len += length;
     }
-    unsigned char send_buf[send_buf_len];
+    // Forbiden by ISO C++
+    // unsigned char send_buf[send_buf_len];
+    unsigned char * send_buf = new unsigned char[send_buf_len];
     pack_sitcp_rbcp_header(send_buf, &send_header);
     if (command == WRITE) {
         memcpy(&send_buf[SITCP_RBCP_HEADER_LEN], buf, length);
     }
 
-    ret = m_sock.writeTo(send_buf, send_buf_len);
+    ret = my_sock.writeTo(send_buf, send_buf_len);
     if (ret < 0) {
         print_packet_error_message(ret, function_name, ip_address);
         return -1;
     }
 
     int recv_buf_len = SITCP_RBCP_HEADER_LEN + length;
-    unsigned char recv_buf[recv_buf_len];
-    ret = m_sock.readFrom(recv_buf, recv_buf_len);
+    // Forbiden by ISO C++
+    // unsigned char recv_buf[recv_buf_len];
+    unsigned char * recv_buf = new unsigned char[recv_buf_len];
+    ret = my_sock.readFrom(recv_buf, recv_buf_len);
     if (ret < 0) {
         print_packet_error_message(ret, function_name, ip_address);
         return -1;
@@ -155,6 +162,9 @@ int SitcpRbcp::send_recv_command_packet(int command, std::string ip_address, int
         }
     }
 
+    delete [] recv_buf;
+    delete [] send_buf;
+    
     return 0;
 }
 
@@ -177,20 +187,23 @@ int SitcpRbcp::write_registers(std::string ip_address, int address, int length, 
     }
     
     if (m_need_verify == 1) {
-        unsigned char re_read_buf[length];
-        ret = send_recv_command_packet(READ, ip_address, address, length, re_read_buf, id);
-        if (ret < 0) {
-            std::cerr << "read for verification fail" << std::endl;
-            return -1;
+      // Forbiden by ISO C++
+      // unsigned char re_read_buf[length];
+      unsigned char * re_read_buf = new unsigned char[length];
+      ret = send_recv_command_packet(READ, ip_address, address, length, re_read_buf, id);
+      if (ret < 0) {
+        std::cerr << "read for verification fail" << std::endl;
+        return -1;
+      }
+      for (int i = 0; i < length; i++) {
+        if (buf[i] != re_read_buf[i]) {
+          std::cerr << std::hex << std::showbase;
+          std::cerr << "write_registers(): re read fail. try to write " << buf[i] << ", but set " << re_read_buf[i] << std::endl;
+          std::cerr << std::dec;
+          ret = -1;
         }
-        for (int i = 0; i < length; i++) {
-            if (buf[i] != re_read_buf[i]) {
-                std::cerr << std::hex << std::showbase;
-                std::cerr << "write_registers(): re read fail. try to write " << buf[i] << ", but set " << re_read_buf[i] << std::endl;
-                std::cerr << std::dec;
-                ret = -1;
-            }
-        }
+      }
+      delete [] re_read_buf;
     }
     
     return ret;

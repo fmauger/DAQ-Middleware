@@ -1,0 +1,78 @@
+# - Tools to build DAQ-MIddleware Components
+#   To be loaded by the DAQMWConfig.cmake script
+
+function(daqmw_build_component
+    compName     # Component name (e.g. DaqOperator)
+    compSources  # Component sources (e.g. DaqOperator.cpp  DaqOperatorComp.cpp ConfFileParser.cpp )
+    compFiles    # Component files (e.g DaqOperator.h  DaqOperator.cpp  DaqOperatorComp.cpp)
+    workPath     # WOrking/generation directory (e.g. ${CMAKE_CURRENT_BINARY_DIR})
+    )
+  
+  message(STATUS "Building DAQMW component '${compName}'...")
+  message(STATUS " - compName='${compName}'")
+  message(STATUS " - compSources='${compSources}'")
+  message(STATUS " - compFiles='${compFiles}'")
+  message(STATUS " - workPath='${workPath}'")
+  set(_daqmwTargetComponent "${compName}Comp")
+  set(_daqmwBuildComponentWorkDir ${workPath})
+  set(_daqmwBuildComponentIdlPath "${DAQMW_IDL_INCLUDE_DIR}")
+
+  add_custom_command(
+    OUTPUT
+    ${_daqmwBuildComponentWorkDir}/DAQServiceDynSK.cc
+    ${_daqmwBuildComponentWorkDir}/DAQService.hh
+    ${_daqmwBuildComponentWorkDir}/DAQServiceSK.cc
+    ${_daqmwBuildComponentWorkDir}/DAQServiceSkel.h
+    ${_daqmwBuildComponentWorkDir}/DAQServiceSkel.cpp
+    ${_daqmwBuildComponentWorkDir}/DAQServiceStub.h
+    ${_daqmwBuildComponentWorkDir}/DAQServiceStub.cpp
+    COMMAND
+      bash "-c" "if [ -L DAQService.idl ]; then rm -f DAQService.idl ; fi"
+    COMMAND
+      bash "-c" "if [ ! -L DAQService.idl ]; then ln -s ${_daqmwBuildComponentIdlPath}/DAQService.idl DAQService.idl ; fi"
+    COMMAND
+      @OPENRTM_IDLC@ @OPENRTM_IDLFLAGS@ DAQService.idl
+    COMMAND
+      @OPENRTM_IDL_WRAPPER@ @OPENRTM_IDL_WRAPPER_FLAGS@ --idl-file=DAQService.idl
+    COMMAND
+      @OPENRTM_IDLC@ @OPENRTM_IDLFLAGS@ DAQService.idl
+    COMMAND
+      @OPENRTM_IDL_WRAPPER@ @OPENRTM_IDL_WRAPPER_FLAGS@ --idl-file=DAQService.idl
+    COMMAND
+      bash "-c" "if [ -L DAQService.idl ]; then  rm -f DAQService.idl ; fi"
+    WORKING_DIRECTORY ${_daqmwBuildComponentWorkDir}
+    VERBATIM
+    )
+
+  # Workaround:
+  # CorbaConsumer.h:363:5: error: base class ‘class RTC::CorbaConsumerBase’ should be
+  # explicitly initialized in the copy constructor [-Werror=extra]
+  add_compile_options("-Wno-error=extra"
+    @OPENRTM_CFLAGS@
+    ) 
+
+  add_library(_${compName}Static OBJECT
+    ${_daqmwBuildComponentWorkDir}/DAQServiceStub.h
+    ${compSources}
+    ${compFiles}
+    )
+
+  add_executable(${_daqmwTargetComponent}
+    ${_daqmwBuildComponentWorkDir}/DAQServiceSkel.cpp
+    ${_daqmwBuildComponentIdlPath}/DAQServiceSVC_impl.cpp
+    ${compSources}
+    ${_${compName}Static}
+    )
+
+  target_link_libraries(${_daqmwTargetComponent}
+    -L${OPENRTM_LIB_DIR}
+    ${OPENRTM_LIBRARIES}
+    ${OPENRTM_LDFLAGS}
+    ${XercesC_LIBRARIES}
+    Sock
+    )
+
+endfunction(daqmw_build_component)
+
+
+# - end

@@ -45,8 +45,8 @@
 using namespace RTC;
 
 // error code for dom
-static const int RET_CODE_IO_ERR		= (-14);
-static const int RET_CODE_REQ_INV_IN_STS	= (-26);
+static const int RET_CODE_IO_ERR                = (-14);
+static const int RET_CODE_REQ_INV_IN_STS        = (-26);
 
 struct serviceInfo {
     std::string comp_id;
@@ -187,6 +187,6 @@ private:
 extern "C"
 {
     void DaqOperatorInit(RTC::Manager* manager);
-};
+}
 
 #endif // DAQOPERATOR_H

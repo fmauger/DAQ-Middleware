@@ -43,11 +43,11 @@ void MyModuleInit(RTC::Manager* manager)
         RTC::PortInterfaceProfileList iflist;
         iflist = port->get_port_profile()->interfaces;
 
-        for (CORBA::ULong i(0), n(iflist.length()); i < n; ++i) {
+        for (CORBA::ULong ii(0), nn(iflist.length()); ii < nn; ++ii) {
             std::cerr << "I/F name: ";
-            std::cerr << iflist[i].instance_name << std::endl;
+            std::cerr << iflist[ii].instance_name << std::endl;
             std::cerr << "I/F type: ";
-            std::cerr << iflist[i].type_name << std::endl;
+            std::cerr << iflist[ii].type_name << std::endl;
             const char* pol;
             pol = iflist[i].polarity == 0 ? "PROVIDED" : "REQUIRED";
             std::cerr << "Polarity: " << pol << std::endl;
@@ -87,5 +87,5 @@ int main (int argc, char** argv)
     // If you want to run the manager in non-blocking mode, do like this
     // manager->runManager(true);
 
-  return 0;
+    return 0;
 }

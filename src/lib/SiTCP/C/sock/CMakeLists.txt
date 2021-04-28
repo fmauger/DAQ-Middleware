@@ -1,0 +1,38 @@
+set(sock_HEADERS
+  sock.h)
+
+set(sock_SOURCES
+  sock.c)
+
+file(COPY ${sock_HEADERS}
+  DESTINATION "${CMAKE_INCLUDE_OUTPUT_DIRECTORY}/daqmw/"
+  )  
+
+add_library(sock SHARED ${sock_SOURCES} ${sock_HEADERS})
+
+set_target_properties(sock PROPERTIES
+  LIBRARY_OUTPUT_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/daqmw
+  )
+
+# set_target_properties(sock PROPERTIES SKIP_BUILD_RPATH FALSE)
+# set_target_properties(sock PROPERTIES BUILD_WITH_INSTALL_RPATH FALSE)
+# set_target_properties(sock PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)
+# if(UNIX AND NOT APPLE)
+#   set_target_properties(sock
+#     PROPERTIES INSTALL_RPATH "\$ORIGIN/../${CMAKE_INSTALL_LIBDIR}/daqmw"
+#     )
+# endif()
+
+install(TARGETS sock
+  EXPORT  DAQMWTargets
+  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/daqmw
+  PERMISSIONS
+  OWNER_READ OWNER_WRITE OWNER_EXECUTE
+  GROUP_READ GROUP_EXECUTE
+  WORLD_READ WORLD_EXECUTE
+
+  )
+
+install(FILES ${sock_HEADERS}
+  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/daqmw
+  )

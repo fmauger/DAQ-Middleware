@@ -14,6 +14,7 @@
 
 #include "json_spirit_value.h"
 #include <iostream>
+#include <string>
 
 namespace json_spirit
 {

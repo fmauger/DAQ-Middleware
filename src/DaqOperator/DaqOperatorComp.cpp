@@ -72,7 +72,7 @@ OperatorSvcList operator_service_list;
 typedef CorbaConsumer<RTObject> corbaObj;
 typedef std::vector< corbaObj > daq_comps;
 CompInfoList daq_comp_list;
-int comp_num;
+// int comp_num;
 DAQLifeCycleState current_state;
 bool debug = false;
 
@@ -83,6 +83,7 @@ std::string host_ns = "localhost"; //initial value
 std::string port_ns = "9876";      //initial value
 const int port_no = 30000;
 const int FIND_COMP_RETRY_MAX_CNTS = 20;
+
 
 CorbaNaming* init_orb(const char* hostname, CORBA::ORB_var orb)
 {
@@ -229,11 +230,11 @@ int find_comps(CorbaNaming* naming, CompGroupList* daq_group_list)
                 RTC::PortInterfaceProfileList iflist;
                 iflist = port->get_port_profile()->interfaces;
 
-                for (CORBA::ULong i(0), n(iflist.length()); i < n; ++i)
-                {
-                    const char* pol;
-                    pol = iflist[i].polarity == 0 ? "PROVIDED" : "REQUIRED";
-                }
+                // for (CORBA::ULong ii(0), nn(iflist.length()); ii < nn; ++ii)
+                // {
+                //     const char* pol;
+                //     pol = iflist[ii].polarity == 0 ? "PROVIDED" : "REQUIRED";
+                // }
 
                 std::string port_type = NVUtil::toString(port->get_port_profile()->properties,
                                                          "port.port_type");
@@ -388,7 +389,10 @@ int connect_data_ports()
                 ReturnCode_t ret;
                 ret = prof.ports[0]->connect(prof);
                 assert(ret == RTC::RTC_OK);
-
+                if (ret != RTC::RTC_OK) {
+                  std::cerr << "### Connection failure" << std::endl;
+                  exit(-1);
+                }
                 //std::cout << "Connector ID: " << prof.connector_id << std::endl;
                 if (debug) {
                     NVUtil::dump(prof.properties);
@@ -438,9 +442,12 @@ int connect_service_ports()
             ReturnCode_t ret = RTC::RTC_OK;
             try {
                 ret = prof.ports[0]->connect(prof);
+                if (ret != RTC::RTC_OK) {
+                  std::clog << "### Connection error" << std::endl;
+                }
             }
             catch(...) {
-                std::cerr << "connenct: Exception occured\n";
+                std::cerr << "connect: Exception occured\n";
             }
             assert(ret == RTC::RTC_OK);
 

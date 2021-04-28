@@ -64,10 +64,11 @@ Default id value is 1.
 */ 
 
 #include <string>
-#include <iostream>
+// #include <iostream>
+// #include <string.h>
 
-#include <err.h>
-#include "Sock.h"
+// #include <err.h>
+// #include "Sock.h" // unused 
 
 struct sitcp_rbcp_header {
     unsigned char ver_type;
@@ -80,8 +81,7 @@ struct sitcp_rbcp_header {
 class SitcpRbcp {
 
 public:
-    SitcpRbcp() :
-    m_need_verify(0) {}
+    SitcpRbcp() = default;
     ~SitcpRbcp() {}
     int read_registers(
         std::string ip_address,
@@ -101,12 +101,14 @@ public:
     int unset_verify_mode();
 
 private:
-    DAQMW::Sock m_sock;
+    // DAQMW::Sock m_sock; // Issue: unused
     int pack_sitcp_rbcp_header(unsigned char *buf, struct sitcp_rbcp_header *header);
     int unpack_sitcp_rbcp_header(unsigned char *buf, struct sitcp_rbcp_header *header);
     int print_packet_error_message(int ret, std::string function_name, std::string ip_address);
     int send_recv_command_packet(int command, std::string ip_address, int address, int length, unsigned char *buf, int id);
-    int m_need_verify;
+
+
+    int m_need_verify = 0;
     const static int SITCP_RBCP_HEADER_LEN    = 8;
     const static unsigned char ACK_MASK       = 0x08;
     const static unsigned char BUS_ERROR_MASK = 0x01;

@@ -82,6 +82,6 @@ private:
 extern "C"
 {
     void SampleMonitorInit(RTC::Manager* manager);
-};
+}
 
 #endif // SAMPLEMONITOR_H

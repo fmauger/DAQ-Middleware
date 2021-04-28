@@ -10,6 +10,7 @@
 #include "utils_test.h"
 
 #include <boost/assign/list_of.hpp>
+#include <climits>
 
 using namespace json_spirit;
 using namespace std;
@@ -85,9 +86,10 @@ namespace
         assert_eq( v1.get_int64(), 1 );
         assert_eq( v3.get_int64(), INT_MAX );
 
-        Value v4( LLONG_MAX );
+        boost::int64_t value(LLONG_MAX);
+        Value v4( value );
 
-        assert_eq( v4.get_int64(), LLONG_MAX );
+        assert_eq( v4.get_int64(), value);
     }
 
     void test_real_value()
@@ -122,7 +124,8 @@ namespace
     void test_get_value()
     {
         test_get_value( 123 );
-        test_get_value( LLONG_MAX );
+        boost::int64_t value(LLONG_MAX);
+        test_get_value( value );
         test_get_value( 1.23 );
         test_get_value( true );
         test_get_value( false );

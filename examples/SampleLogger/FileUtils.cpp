@@ -110,7 +110,7 @@ void FileUtils::set_max_size(unsigned long long size)
 
 int FileUtils::set_max_size_in_megaBytes(unsigned int size)
 {
-    if (size < 0 || size > 1024) {
+    if (/* size < 0 || */ size > 1024) {
         return -1;
     }
     unsigned long long msize = size * 1024 * 1024;

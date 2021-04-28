@@ -33,7 +33,7 @@ LDFLAGS  += $(shell rtm-config --libs)
 SHFLAGS  = -shared
 
 IDLC     = `rtm-config --idlc`
-IDLFLAGS = `rtm-config --idlflags` -I`rtm-config --prefix`/include/rtm/idl
+IDLFLAGS = `rtm-config --idlflags` -I`rtm-config --rtm-includedir`/rtm/idl
 WRAPPER  = rtm-skelwrapper
 WRAPPER_FLAGS = --include-dir="" --skel-suffix=Skel --stub-suffix=Stub
 

@@ -387,6 +387,6 @@ namespace DAQMW {
     static const int MAXRECV = 8000;
     
   };
-};
+}
 
 #endif // SOCK_H

@@ -41,7 +41,7 @@ namespace DAQMW {
     memset ( &m_addr, 0, sizeof ( m_addr ) );
     if(m_debug) {
       std::cerr << "Sock::Sock:ipaddress = "<<  m_ipAddress 
-		<< "  port = " << m_port << std::endl;
+                << "  port = " << m_port << std::endl;
     }
     // for sendTo(UDP)
     memset(&m_addr_other, 0, sizeof (m_addr_other));
@@ -105,14 +105,14 @@ namespace DAQMW {
     m_addr.sin_addr.s_addr = INADDR_ANY;
     m_addr.sin_port = htons ( port );
     status = ::bind ( m_sock,
-		      ( struct sockaddr * ) &m_addr,
-		      sizeof ( m_addr ) );
+                      ( struct sockaddr * ) &m_addr,
+                      sizeof ( m_addr ) );
     if ( status == -1 ) {
       perror("### ERROR: Sock::bind(int):bind");
       throw SockException("Sock::bind error");
     } else {
       if(m_debug)
-	std::cerr << "Sock::bind(int) done\n";
+        std::cerr << "Sock::bind(int) done\n";
       return SUCCESS;
     }
   }
@@ -127,14 +127,14 @@ namespace DAQMW {
     m_addr.sin_addr.s_addr = inet_addr(ipAddress);
     m_addr.sin_port = htons ( port );
     status = ::bind ( m_sock,
-		      ( struct sockaddr * ) &m_addr,
-		      sizeof ( m_addr ) );
+                      ( struct sockaddr * ) &m_addr,
+                      sizeof ( m_addr ) );
     if ( status == -1 ) {
       perror("### ERROR: Sock::bind(int, char*):bind");
       throw SockException("Sock::bind error");
     } else {
       if(m_debug)
-	std::cerr << "Sock::bind(int, char*) done\n";
+        std::cerr << "Sock::bind(int, char*) done\n";
       return SUCCESS;
     }
   }
@@ -146,7 +146,7 @@ namespace DAQMW {
       throw SockException("Sock::listen error");
     } else {
       if(m_debug)
-	std::cerr << "Sock::listen() done\n";
+        std::cerr << "Sock::listen() done\n";
       return SUCCESS;
     }
   }
@@ -154,13 +154,13 @@ namespace DAQMW {
   int Sock::accept ( Sock& new_socket ) const {
     int addr_length = sizeof ( m_addr );
     new_socket.m_sock = ::accept ( m_sock, ( sockaddr * ) &m_addr,
-				   ( socklen_t * )&addr_length );
+                                   ( socklen_t * )&addr_length );
     if ( new_socket.m_sock < 0 ) { 
       perror("### ERROR: Sock::accept(Sock&):accept");
       throw SockException("Sock::accept error");
     } else {
       if(m_debug)
-	std::cerr << "Sock::accept(Sock&) done\n";
+        std::cerr << "Sock::accept(Sock&) done\n";
       return SUCCESS;
     }
   }
@@ -169,7 +169,7 @@ namespace DAQMW {
     m_connectTimeout = time;
   }
 
-  void Sock::connectAlarm(int signo) {
+  void Sock::connectAlarm(int /* signo */) {
     return;
   }
 
@@ -194,7 +194,7 @@ namespace DAQMW {
     if ( ! isValidSock() ) {
       m_sock = socket ( AF_INET, SOCK_STREAM, 0 );
       if (m_debug)
-	std::cerr << "Sock::connect(string,int): socket is created" << std::endl;
+        std::cerr << "Sock::connect(string,int): socket is created" << std::endl;
       if (!isValidSock())
         return ERROR_FATAL;
     }
@@ -208,10 +208,10 @@ namespace DAQMW {
     } else if(status == 0) { // specified by hostname not ip
       struct hostent *hostinfo = gethostbyname(host.c_str());
       if(hostinfo != NULL) {
-	m_addr.sin_addr.s_addr = *(unsigned int*)hostinfo->h_addr_list[0];
+        m_addr.sin_addr.s_addr = *(unsigned int*)hostinfo->h_addr_list[0];
       } else {
-	std:: cerr << "### ERROR: Sock::connect(string, int) gethostbyname" << std::endl;
-	return ERROR_FATAL;
+        std:: cerr << "### ERROR: Sock::connect(string, int) gethostbyname" << std::endl;
+        return ERROR_FATAL;
       }
     }
     if (m_debug)
@@ -232,7 +232,7 @@ namespace DAQMW {
     alarm(0);
     if(status < 0) {
       if(errno== EINTR)
-	return ERROR_TIMEOUT;
+        return ERROR_TIMEOUT;
       perror("### ERROR: Sock::connect(string, int) connect");
       return ERROR_FATAL;
     }
@@ -251,12 +251,12 @@ namespace DAQMW {
     switch(type) {
     case TCP:
       if(m_debug)
-	std::cerr << "Sock::connect(int): TCP was selected" << std::endl;
+        std::cerr << "Sock::connect(int): TCP was selected" << std::endl;
       socketType = SOCK_STREAM;
       break;
     case UDP:
       if(m_debug)
-	std::cerr << "Sock::connect(int): UDP was selected" << std::endl;
+        std::cerr << "Sock::connect(int): UDP was selected" << std::endl;
       socketType = SOCK_DGRAM;
       break;
     default:
@@ -270,7 +270,7 @@ namespace DAQMW {
     }
     on = 1; // Reuse is active
     if ( setsockopt ( m_sock, SOL_SOCKET, SO_REUSEADDR, 
-		      ( const char* ) &on, sizeof ( on ) ) == -1 ) {
+                      ( const char* ) &on, sizeof ( on ) ) == -1 ) {
       perror("### ERROR: Sock::connect(int):setsockopt:ReUseAddr");
       return ERROR_FATAL;
     }
@@ -281,7 +281,7 @@ namespace DAQMW {
 
     // Receive(recv/read) timeout is set.
     if ( (status = setsockopt ( m_sock, SOL_SOCKET, SO_RCVTIMEO, 
-				&tv, sizeof(tv))) < 0) {
+                                &tv, sizeof(tv))) < 0) {
       perror("### ERROR: Sock::connect(int):setsockopt:ReceiveTimeout");
       return ERROR_FATAL;
     }
@@ -289,7 +289,7 @@ namespace DAQMW {
       std::cerr << "Sock::connect(int):setsockopt:RecvTimeout done" << std::endl;
     // Send(send/write) timeout is set.
     if ( (status = setsockopt ( m_sock, SOL_SOCKET, SO_SNDTIMEO, 
-				&tv, sizeof(tv))) < 0) {
+                                &tv, sizeof(tv))) < 0) {
       perror("### ERROR: Sock::connect(int):setsockopt:SendTimeout");
       return ERROR_FATAL;
     }
@@ -308,12 +308,12 @@ namespace DAQMW {
     }
     setAlarmTimer(); // set connection timeout.
     status = ::connect ( m_sock, ( const sockaddr * ) &m_addr,
-			 (socklen_t)sizeof ( m_addr ) );
+                         (socklen_t)sizeof ( m_addr ) );
     alarm(0);
     if(status < 0) {
       if(errno==EINTR) {
-	perror("### ERROR: Sock::connect(int):connect:Time out");
-	return ERROR_TIMEOUT;
+        perror("### ERROR: Sock::connect(int):connect:Time out");
+        return ERROR_TIMEOUT;
       }
       perror("### ERROR: Sock::connect(int):connect:Fatal error");
       return ERROR_FATAL;
@@ -344,7 +344,7 @@ namespace DAQMW {
     int status = ::send ( m_sock, s.c_str(), s.size(), MSG_NOSIGNAL );
     if ( status == -1 ) {
       if((errno == ETIMEDOUT)||(errno == EAGAIN)) {
-	return ERROR_TIMEOUT;
+        return ERROR_TIMEOUT;
       }
       perror("### ERROR: Sock::send(const string):send");
       throw SockException("Sock::send(const string) error");
@@ -357,7 +357,7 @@ namespace DAQMW {
     int status = ::send ( m_sock, s, size, MSG_NOSIGNAL );
     if ( status == -1 ) {
       if((errno == ETIMEDOUT)||(errno == EAGAIN)) {
-	return ERROR_TIMEOUT;
+        return ERROR_TIMEOUT;
       }
       perror("### ERROR: Sock::send(const unsigned int*, int):send");
       throw SockException("Sock::send(const unsigned int*, int) error");
@@ -374,13 +374,13 @@ namespace DAQMW {
     while (nleft > 0) {
     again:
       if ( (nwritten = ::send ( m_sock, ptr, nleft, MSG_NOSIGNAL )) < 0) {
-	if(errno == EINTR) {
-	  goto again;
-	} else if((errno == ETIMEDOUT)||(errno == EAGAIN)) {
-	  return ERROR_TIMEOUT;
-	}
-	perror("### ERROR: Sock::sendAll(const string):send");
-	throw SockException("Sock::sendAll(const string) error");	
+        if(errno == EINTR) {
+          goto again;
+        } else if((errno == ETIMEDOUT)||(errno == EAGAIN)) {
+          return ERROR_TIMEOUT;
+        }
+        perror("### ERROR: Sock::sendAll(const string):send");
+        throw SockException("Sock::sendAll(const string) error");       
       }
       nleft -= nwritten;
       ptr   += nwritten;
@@ -398,12 +398,12 @@ namespace DAQMW {
     while (nleft > 0) {
     again:
       if ( (nwritten = ::send ( m_sock, ptr, nleft, MSG_NOSIGNAL )) < 0) {
-	if(errno == EINTR) {
-	  goto again;
-	} else if((errno == ETIMEDOUT)||(errno == EAGAIN)) {
-	  return ERROR_TIMEOUT;
-	}
-	throw SockException("Sock::sendAll(const unsigned int*, int) error");
+        if(errno == EINTR) {
+          goto again;
+        } else if((errno == ETIMEDOUT)||(errno == EAGAIN)) {
+          return ERROR_TIMEOUT;
+        }
+        throw SockException("Sock::sendAll(const unsigned int*, int) error");
       }
       nleft -= nwritten;
       ptr   += nwritten;
@@ -421,12 +421,12 @@ namespace DAQMW {
     int status = ::recv ( m_sock, buf, MAXRECV, 0 );
     if ( status < 0 ) { 
       if(errno ==EINTR) {
-	goto again;
+        goto again;
       } else if((errno == ETIMEDOUT)||(errno == EAGAIN)) {
-	return ERROR_TIMEOUT;
+        return ERROR_TIMEOUT;
       }
       perror("### ERROR: Sock::recv(string&)");
-      throw SockException("Sock::recv(string&) fatal error");	
+      throw SockException("Sock::recv(string&) fatal error");   
     } else if(status == 0) {  // far end node link will be off.
       perror("### ERROR: Sock::recv(string&)");
       throw SockException("Sock::recv(string&) fatal error: far end node link off");
@@ -441,12 +441,12 @@ namespace DAQMW {
     int status = ::recv ( m_sock, (char*)s, size, 0);
     if ( status < 0 ) {
       if(errno == EINTR)
-	goto again;
+        goto again;
       if((errno == ETIMEDOUT)||(errno == EAGAIN)) {
-	return ERROR_TIMEOUT;
+        return ERROR_TIMEOUT;
       } else {
-	perror("### ERROR: Sock::recv(unsigned int*, int)");
-	throw SockException("Sock::recv(int*, int) error");
+        perror("### ERROR: Sock::recv(unsigned int*, int)");
+        throw SockException("Sock::recv(int*, int) error");
       }
     } else if(status == 0) {  // far end node link will be off.
       perror("### ERROR: Sock::recv(unsigned int*,int)");
@@ -459,16 +459,16 @@ namespace DAQMW {
     char buf [ MAXRECV + 1 ];
     if(size > MAXRECV) {
       std::cerr << "### ERROR: specified size is too large in Socket::recvAll(string&)\n";
-      throw SockException("Sock::recvAll(string&, int&) fatal error");	
+      throw SockException("Sock::recvAll(string&, int&) fatal error");  
     }
     memset ( buf, 0, MAXRECV + 1 );
   again:
     int status = ::recv ( m_sock, buf, size, MSG_WAITALL );
     if ( status < 0 ) {
       if(errno == EINTR) {
-	goto again;
+        goto again;
       } else if((errno == ETIMEDOUT)||(errno == EAGAIN)) {
-	return ERROR_TIMEOUT;
+        return ERROR_TIMEOUT;
       }
       perror("### ERROR: Sock::recvAll(string&,int&):recv fatal error");
       throw SockException("Sock::recvAll(string&, int&) fatal error");
@@ -489,18 +489,18 @@ namespace DAQMW {
     int status = ::recv ( m_sock, (char*)s, size, MSG_WAITALL);
     if ( status < 0 ) {
       if(errno == EINTR) {
-	goto again;
+        goto again;
       } else if((errno == ETIMEDOUT)||(errno == EAGAIN)) {
-	return ERROR_TIMEOUT;
+        return ERROR_TIMEOUT;
       } else {
-	perror("### ERROR: Sock::recvAll(unsigned int, int):recv fatal error");
-	throw SockException("Sock::recv(unsigned int*, int) fatal error");
+        perror("### ERROR: Sock::recvAll(unsigned int, int):recv fatal error");
+        throw SockException("Sock::recv(unsigned int*, int) fatal error");
       }
     } else if(status == 0) { // far end node link will be off.
       perror("### ERROR: Sock::recvAll(unsigned int, int):recv far end node link off");
       throw SockException("Sock::recv(unsigned int*, int) fatal error: far end node link off");
       if (status != size)
-	throw SockException("Sock::recv(unsigned int*, int) fatal error: not same size");
+        throw SockException("Sock::recv(unsigned int*, int) fatal error: not same size");
     }
     return SUCCESS;
   }
@@ -513,9 +513,9 @@ namespace DAQMW {
     int status = ::send ( m_sock, buffer, nbytes, MSG_NOSIGNAL );
     if ( status == -1 ) {
       if(errno == EINTR) {
-	goto again;
+        goto again;
       } else if((errno == ETIMEDOUT)||(errno == EAGAIN)) {
-	return ERROR_TIMEOUT;
+        return ERROR_TIMEOUT;
       } else if (errno == EPIPE) {
         perror("### ERROR: Sock::write(unsigned char*,int):send far end node link off");
       } else {
@@ -534,12 +534,12 @@ namespace DAQMW {
       std::cout << "n = ::read() = " << n << std::endl;
     if(n < 0) {
       if(errno == EINTR) {
-	goto again;
+        goto again;
       } else if((errno == ETIMEDOUT)||(errno == EAGAIN)) {
-	return ERROR_TIMEOUT;
+        return ERROR_TIMEOUT;
       } else {
-	perror("### ERROR: Sock::read(unsigned char*,int):read fatal error");
-	return ERROR_FATAL;
+        perror("### ERROR: Sock::read(unsigned char*,int):read fatal error");
+        return ERROR_FATAL;
       }
     } else if(n == 0) { // far end node link will be off.
       perror("### ERROR: Sock::read(unsigned char*,int):read far end node link off");
@@ -559,17 +559,17 @@ namespace DAQMW {
     while (nleft > 0) {
     again:
       if ( (nwritten = ::send ( m_sock, ptr, nleft, MSG_NOSIGNAL )) < 0) {
-	if(errno == EINTR) {
-	  goto again;
-	} else if((errno == ETIMEDOUT)||(errno == EAGAIN)) {
-	  return ERROR_TIMEOUT;
-	} else if (errno == EPIPE) {
+        if(errno == EINTR) {
+          goto again;
+        } else if((errno == ETIMEDOUT)||(errno == EAGAIN)) {
+          return ERROR_TIMEOUT;
+        } else if (errno == EPIPE) {
           perror("### ERROR: Sock::write(unsigned char*,int):send far end node link off");
-	  return ERROR_FATAL;
+          return ERROR_FATAL;
         } else {
-	  perror("### ERROR: Sock::writeAll(unsigned char*,int):send fatal error");
-	  return ERROR_FATAL;
-	}
+          perror("### ERROR: Sock::writeAll(unsigned char*,int):send fatal error");
+          return ERROR_FATAL;
+        }
       }
       nleft -= nwritten;
       ptr   += nwritten;
@@ -586,13 +586,13 @@ namespace DAQMW {
     int status = ::recv ( m_sock, buffer, nbytes, MSG_WAITALL);
     if ( status < 0 ) {
       if(errno == EINTR) {
-	goto again;
+        goto again;
       }
       if((errno == ETIMEDOUT)||(errno == EAGAIN)) {
-	return ERROR_TIMEOUT;
+        return ERROR_TIMEOUT;
       } else {
-	perror("### ERROR: Sock::readAll(unsigned char*,int):recv fatal error");
-	return ERROR_FATAL;
+        perror("### ERROR: Sock::readAll(unsigned char*,int):recv fatal error");
+        return ERROR_FATAL;
       }
     } else if(status == 0) { // far end node link will be off.
       perror("### ERROR: Sock::readAll(unsigned char*,int):recv far end node link off");
@@ -621,7 +621,7 @@ namespace DAQMW {
       } else if (errno == EPIPE) {
         perror("### ERROR: Sock::writeTo(unsigned char*,int):sendto far end node link off");
       } else {
-	perror("### ERROR: Sock::writeTo(unsigned char*,int):sendto fatal error");
+        perror("### ERROR: Sock::writeTo(unsigned char*,int):sendto fatal error");
         return ERROR_FATAL;
       }
     }
@@ -635,11 +635,11 @@ namespace DAQMW {
                             (struct sockaddr*)&m_addr_other, &m_slen);
     if (m_debug)
       std::cout << "Sock::readFrom:port # sent = " << m_addr_other.sin_port << \
-	std::endl;
+        std::endl;
     if (status < 0) {
       if(errno == EINTR) {
-	std::cerr << "readFrom(unsigned char*, int): signal is received.";
-	std::cerr << std::endl;
+        std::cerr << "readFrom(unsigned char*, int): signal is received.";
+        std::cerr << std::endl;
         goto again;
       }
       if((errno == ETIMEDOUT)||(errno == EAGAIN)) {
@@ -692,7 +692,7 @@ namespace DAQMW {
     else
       on = 0;
     if ( setsockopt ( m_sock, SOL_SOCKET, SO_REUSEADDR, 
-		      ( const char* ) &on, sizeof ( on ) ) == -1 ) {
+                      ( const char* ) &on, sizeof ( on ) ) == -1 ) {
       perror("### ERROR: Sock::setOptReUse:setsockopt(SO_REUSEADDR) error");
       throw SockException("Sock::create setsockopt(SO_REUSEADDR) error");
     }
@@ -708,7 +708,7 @@ namespace DAQMW {
     else
       on = 0;
     if( setsockopt ( m_sock, IPPROTO_TCP, TCP_NODELAY, 
-		     ( const char* ) &on, sizeof (on) ) == -1){
+                     ( const char* ) &on, sizeof (on) ) == -1){
       perror("### ERROR: Sock::setOptNoDelay() error");
       throw SockException("Sock::create setsockopt(TCP_NODELAY) error");
     }
@@ -723,10 +723,10 @@ namespace DAQMW {
     m_timeout = time;
     if ((status = float2timeval(m_timeout, &tv)) < 0) {
       if(m_debug)
-	perror("### ERROR: Sock::setOptRecvTimeOut():float2timeval error");
+        perror("### ERROR: Sock::setOptRecvTimeOut():float2timeval error");
     }
     if ( (status = setsockopt ( m_sock, SOL_SOCKET, SO_RCVTIMEO, 
-				&tv, sizeof(tv))) < 0) {
+                                &tv, sizeof(tv))) < 0) {
       perror("### ERROR: Sock::setOptRecvTimeOut:setsockopt error");
       throw SockException("### Sock::connect setsockopt(SO_RCVTIMEO) error");
     }
@@ -743,7 +743,7 @@ namespace DAQMW {
       perror("### ERROR: Sock::setOptSendTimeOut():float2timeval error");
     }
     if ( (status = setsockopt ( m_sock, SOL_SOCKET, SO_SNDTIMEO, 
-				&tv, sizeof(tv))) < 0) {
+                                &tv, sizeof(tv))) < 0) {
       perror("### ERROR: Sock::setOptSendTimeOut: fatal error");
       throw SockException("### Sock::connect setsockopt(SO_SNDTIMEO) error");
     }
@@ -756,7 +756,7 @@ namespace DAQMW {
     int val = value;
     int status;
     if ( (status = setsockopt ( m_sock, SOL_SOCKET, SO_RCVBUF, 
-				&val, sizeof(val))) < 0) {
+                                &val, sizeof(val))) < 0) {
       perror("### ERROR: Sock::setOptRecvBuf: fatal error");
       throw SockException("### Sock::connect setsockopt(SO_RCVBUF) error");
     }
@@ -769,7 +769,7 @@ namespace DAQMW {
     int val = value;
     int status;
     if ( (status = setsockopt ( m_sock, SOL_SOCKET, SO_SNDBUF, 
-				&val, sizeof(val))) < 0){
+                                &val, sizeof(val))) < 0){
       perror("### ERROR: Sock::setOptSendBuf: fatal error");
       throw SockException("### Sock::connect setsockopt(SO_SNDBUF) error");
     }

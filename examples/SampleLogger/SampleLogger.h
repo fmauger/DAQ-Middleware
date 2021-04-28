@@ -66,6 +66,6 @@ private:
 extern "C"
 {
     void SampleLoggerInit(RTC::Manager* manager);
-};
+}
 
 #endif // SAMPLELOGGER_H

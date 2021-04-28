@@ -68,7 +68,7 @@ RTC::ReturnCode_t SampleMonitor::onInitialize()
     return RTC::RTC_OK;
 }
 
-RTC::ReturnCode_t SampleMonitor::onExecute(RTC::UniqueId ec_id)
+RTC::ReturnCode_t SampleMonitor::onExecute(RTC::UniqueId /* ec_id */)
 {
     daq_do();
 
@@ -320,4 +320,4 @@ extern "C"
                     RTC::Create<SampleMonitor>,
                     RTC::Delete<SampleMonitor>);
     }
-};
+}
